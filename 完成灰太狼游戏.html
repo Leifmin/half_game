@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>灰太狼</title>
+	<style type="text/css">
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	#box {
+		margin: 100px auto;
+		background: url(img/myrank_bg.jpg) no-repeat;
+		background-size: 100% 100%;
+		width: 520px;
+		height: 780px;
+		position: relative;
+		/*background-color: red;*/
+	}
+	#box div {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 108px;
+		height: 101px;
+	}
+	#bengin {
+		display: block;
+		color: red;
+		font-size: 50px;
+		position: absolute;
+		top: 340px;
+		left: 50px;
+		font-weight: bold;
+		width: 400px;
+		text-align: center;
+		user-select:none;
+		cursor:pointer;
+	}
+	</style>
+</head>
+<body>
+	<div id="box"></div>
+	<script type="text/javascript">
+		var locationLeft =["164px","51px","330px","339px","181px","41px","64px","204px","355px"];
+		var locationTop =["236px","306px","277px","392px","360px","407px","527px","492px","527px"];
+		var box =document.getElementById("box");
+		// 生成一个点击开始的按钮
+		var bengin =document.createElement("span");
+		bengin.setAttribute("id","bengin");
+		bengin.innerText = "点击开始游戏！";
+		box.appendChild(bengin);
+
+		// 随机函数
+		function rnd(min,max){
+			return parseInt(Math.random()*(max-min))+min;
+		}
+		// 装狗的位置下标数组
+		var locationExist =[];
+		//判断狗的位置是否存在，存在则替换
+		function lE(){
+			var location =rnd(0,locationTop.length);	
+			while(locationExist.indexOf(location) != -1){
+				var location =rnd(0,locationTop.length);
+			}
+			locationExist.push(location);
+			return location;
+		}
+		// 随机生成小狗狗的函数
+		function createWolf() {
+			var wolf =document.createElement("div");
+			// 小狗还是大狗
+			var who =Math.random()-0.7 > 0 ? "x" : "h";
+			wolf.style.backgroundImage = "url(img/"+who+".png)";
+
+			// 狗出现的位置
+			var gou =lE();
+			wolf.style.left =locationLeft[gou];
+			wolf.style.top =locationTop[gou];
+
+			// locationLeft.
+			//定一个参数作为动画的帧
+			wolf.index =0;
+			// 作为动画方向的开关
+			wolf.upFlag =true;
+			wolf.timer =setInterval(function(){
+				if(wolf.upFlag) {
+					wolf.index++;
+				}else {
+					wolf.index--;
+				} 
+				if(wolf.index ===5) {
+					wolf.upFlag =false;
+				}
+				if(wolf.index < 0 ||wolf.index >10) {
+					clearInterval(wolf.timer);
+					box.removeChild(wolf);
+					locationExist.splice(locationExist.indexOf(gou),1);
+					
+				}
+				wolf.style.backgroundPosition = - wolf.index *108+"px 0";
+			},100)
+			wolf.onclick =function () {
+				this.index =6;
+				wolf.upFlag = true;
+				this.onclick =null;
+			}
+			box.appendChild(wolf);
+		}
+
+		bengin.onclick =function () {
+			setTimeout(function(){
+				bengin.innerText ="3";
+				bengin.style.fontSize ="200px";
+			},500)
+			setTimeout(function(){
+				bengin.innerText ="2";
+			},1000)
+			setTimeout(function(){
+				bengin.innerText ="1";
+			},1500)
+			setTimeout(function(){
+				bengin.onclick =null;
+				box.removeChild(bengin);
+			},2000)
+			setTimeout(function(){
+					setInterval(function() {
+					createWolf();
+					
+					},400)
+			},2500)
+		}
+		
+		
+	</script>
+</body>
+</html>
